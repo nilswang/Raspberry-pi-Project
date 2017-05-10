@@ -3,62 +3,43 @@ Created on May 5, 2017
 
 @author: Jicheng Wang 
 '''
-from bs4 import BeautifulSoup
-import mechanize
-import time
-import urllib
-import string
-import os
+import re  
+import urllib  
+import urllib2 
+import wx
+from wx import TextCtrl
 
-
-def downloadProcess(html, base, filetype, linkList):
-    soup = BeautifulSoup(html)
-    for link in soup.find_all('a'):
-        linkText = str(link.get('href'))
+class webBot(wx.Frame):
+    def __init__(self,parent,id):
+        wx.Frame.__init__(self,parent,id,'web roboot',size =(400,400))
+        panel=wx.Panel(self)
+        self.text = wx.TextCtrl(panel, wx.ID_ANY, "Websize:", pos = (50,100), size =(300, 150), style = wx.TE_LEFT |wx.TE_MULTILINE |wx.TE_READONLY)
+        self.button = wx.Button(panel, -1, "search", pos = (150,300), size = (100,50))
+        self.Bind(wx.EVT_BUTTON, self.Search)
         
-        if filetype in linkText:
-            slashList = [i for i, ind in enumerate(linkText) if ind == '/']
-            directoryName = linkText[(slashList[0]+1):slashList[1]]
-            if not os.path.exists(directoryName):
-                os.makedirs(directoryName)
+    def Search(self, event):
+        def getHtml(url): 
+            page = urllib.urlopen(url)  
+            html = page.read()  
+            return html
+
+        def getImg(html):  
+            reg = r'src="(.+?\.jpg)" pic_ext'  
+            imgre = re.compile(reg)  
+            imglist = imgre.findall(html)  
+            x = 0  
+            for imgurl in imglist:  
+                urllib.urlretrieve(imgurl,'%s.jpg' %x)
+                x = x + 1
                 
-            image = urllib.URLopener()
-            linkGet = base + linkText
-            filesave = string.lstrip(linkText, '/')
-            image.retrieve(linkGet, filesave)
-        elif "htm" in linkText:
-            linkList.append(link)
-
-start = "http://" + raw_input("where would you like to start searching\n")
-filetype = raw_input("what file type are you looking for\n")
-
-numSlash = start.count('/')
-slashList = [i for i, ind in enumerate(start) if ind == '/']
-
-if (len(slashList) >= 3):
-    third = slashList[2]
-    base = start[:third]
-else:
-    base = start
-
-
-br = mechanize.Browser()
-r = br.open(start)
-html = r.read()
-linkList = []
-
-print "parsing" + start
-downloadProcess(html, base, filetype, linkList)
-
-for leftover in linkList:
-    time.sleep(0.1)
-    linkText = str(leftover.get('href'))
-    print "parsing" +base + linkText
-    br = mechanize.Browser()
-    r = br.open(base + linkText)
-    html = r.read()
-    linkList = []
-    downloadProcess(html, base, filetype, linkList)
+        self.data = self.text.GetValue()
+        html = getHtml(str(self.data)) 
+        getImg(html)
     
-        
-    
+
+
+if __name__=='__main__':
+    app=wx.PySimpleApp()
+    frame=webBot(parent=None,id=-1)
+    frame.Show()
+    app.MainLoop()
