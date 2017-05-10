@@ -43,3 +43,8 @@ if __name__=='__main__':
     frame=webBot(parent=None,id=-1)
     frame.Show()
     app.MainLoop()
+
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#Perfection: 1 try to add a folder automatic to save download file
+#            2 try to download more type of file not only photo
