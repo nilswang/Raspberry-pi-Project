@@ -1,3 +1,4 @@
 https://github.com/ngollon/Jukebox
 https://github.com/alexfederlin/jukebox
 https://blog.mwiedemeyer.de/post/Raspberry-Pi-Jukebox-fur-Kinder
+http://www.dfrobot.com.cn/community/thread-22831-1-1.html
